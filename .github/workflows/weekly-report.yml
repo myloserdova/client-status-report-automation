@@ -1,0 +1,40 @@
+name: Weekly status report
+
+# Runs every Friday and on demand. The report is shown on the run summary page
+# and saved as a downloadable artifact.
+#
+# The demo data is frozen at 2026-11-06, so the date is pinned below. On a real
+# project, point --data-dir at a fresh tracker export and remove AS_OF so the
+# report uses the current date.
+
+on:
+  schedule:
+    - cron: "0 13 * * 5" # Fridays, 13:00 UTC
+  workflow_dispatch:
+    inputs:
+      as_of:
+        description: "Report date (YYYY-MM-DD)"
+        required: false
+
+env:
+  AS_OF: ${{ inputs.as_of || '2026-11-06' }}
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate input data
+        run: python -m status_report --validate-only
+      - name: Generate reports
+        run: python -m status_report --as-of "$AS_OF" --out-dir reports
+      - name: Show the client report on the run summary
+        run: cat "reports/client_status_${AS_OF}.md" >> "$GITHUB_STEP_SUMMARY"
+      - name: Save reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-status-report
+          path: reports/
