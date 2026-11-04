@@ -1,5 +1,6 @@
 # Client Status Report Automation
-
+ ![CI](https://github.com/myloserdova/client-status-report-automation/actions/workflows/ci.yml/badge.svg)
+ 
 Turn a task export into a ready-to-send weekly client status report, plus an internal team workload view, in one command.
 
 Built as a project-management automation case study: a project manager running several web projects in parallel spends hours each week copying numbers out of a tracker into status emails. This tool removes that step and makes the status rules explicit and consistent.
